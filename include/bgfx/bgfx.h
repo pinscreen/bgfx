@@ -1833,6 +1833,16 @@ namespace bgfx
 	/// @attention C99 equivalent is `bgfx_read_frame_buffer`.
 	///
 	uint32_t readTexture(FrameBufferHandle _handle, uint8_t _attachment, void* _data);
+    
+    /// Read back framebuffer content.
+    ///
+    /// @param[in] _handle Frame buffer handle.
+    /// @param[in] _data Destination buffer.
+    ///
+    /// @returns Frame number when the result will be available. See: `bgfx::frame`.
+    ///
+    
+    uint32_t readFrameBuffer(FrameBufferHandle _handle, void* _data);
 
 	/// Destroy texture.
 	///
