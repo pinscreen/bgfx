@@ -642,6 +642,7 @@ namespace bgfx
 			DestroyFrameBuffer,
 			DestroyUniform,
 			ReadTexture,
+            ReadFrameBuffer,
 			SaveScreenShot,
 		};
 
@@ -2111,6 +2112,7 @@ namespace bgfx
 		virtual void updateTexture(TextureHandle _handle, uint8_t _side, uint8_t _mip, const Rect& _rect, uint16_t _z, uint16_t _depth, uint16_t _pitch, const Memory* _mem) = 0;
 		virtual void updateTextureEnd() = 0;
 		virtual void readTexture(TextureHandle _handle, void* _data) = 0;
+        virtual void readFrameBuffer(FrameBufferHandle _handle, void* _data) = 0;
 		virtual void resizeTexture(TextureHandle _handle, uint16_t _width, uint16_t _height, uint8_t _numMips) = 0;
 		virtual void overrideInternal(TextureHandle _handle, uintptr_t _ptr) = 0;
 		virtual uintptr_t getInternal(TextureHandle _handle) = 0;
@@ -3205,6 +3207,14 @@ namespace bgfx
 			BX_CHECK(isValid(textureHandle), "Frame buffer texture %d is invalid.", _attachment);
 			return readTexture(textureHandle, _data);
 		}
+        
+        BGFX_API_FUNC(uint32_t readFrameBuffer(FrameBufferHandle _handle, void* _data) )
+        {
+            CommandBuffer& cmdbuf = getCommandBuffer(CommandBuffer::ReadFrameBuffer);
+            cmdbuf.write(_handle);
+            cmdbuf.write(_data);
+            return m_frames + 2;
+        }
 
 		void resizeTexture(TextureHandle _handle, uint16_t _width, uint16_t _height, uint8_t _numMips)
 		{

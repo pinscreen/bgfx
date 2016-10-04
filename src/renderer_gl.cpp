@@ -2399,6 +2399,39 @@ namespace bgfx { namespace gl
 				GL_CHECK(glBindTexture(texture.m_target, 0) );
 			}
 		}
+        
+        void readFrameBuffer(FrameBufferHandle _handle, void* _data) BX_OVERRIDE
+        {
+            //if (m_readBackSupported)
+            {
+                const FrameBufferGL& frameBuffer = m_frameBuffers[_handle.idx];
+                
+                GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer.m_fbo[0]) );
+                
+                GL_CHECK(glReadBuffer(GL_COLOR_ATTACHMENT0));
+                
+                uint32_t width  = frameBuffer.m_width;
+                uint32_t height = frameBuffer.m_height;
+                
+                GL_CHECK(glReadPixels(0
+                                      , 0
+                                      , width
+                                      , height
+                                      , m_readPixelsFmt
+                                      , GL_UNSIGNED_BYTE
+                                      , _data
+                                      ) );
+                
+                if (GL_RGBA == m_readPixelsFmt)
+                {
+                    imageSwizzleBgra8(width, height, width*4, _data, _data);
+                }
+
+                
+                
+                GL_CHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0) );
+            }
+        }
 
 		void resizeTexture(TextureHandle _handle, uint16_t _width, uint16_t _height, uint8_t _numMips) BX_OVERRIDE
 		{

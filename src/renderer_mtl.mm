@@ -816,6 +816,28 @@ namespace bgfx { namespace mtl
 			retain(m_commandBuffer); //NOTE: keep alive to be useable at 'flip'
 		}
 
+        void readFrameBuffer(FrameBufferHandle _handle, void* _data) BX_OVERRIDE
+        {
+            TextureHandle texHandle = m_frameBuffers[_handle.idx].m_colorHandle[0];
+
+            m_commandBuffer.commit();
+            m_commandBuffer.waitUntilCompleted();
+            MTL_RELEASE(m_commandBuffer)
+
+            const TextureMtl& texture = m_textures[texHandle.idx];
+
+            uint32_t width  = texture.m_ptr.width();
+            uint32_t height = texture.m_ptr.height();
+            const uint8_t bpp = getBitsPerPixel(TextureFormat::Enum(texture.m_textureFormat) );
+
+            MTLRegion region = { { 0, 0, 0 }, { width, height, 1 } };
+
+            texture.m_ptr.getBytes(_data, width*bpp/8, 0, region, 0, 0);
+
+            m_commandBuffer = m_commandQueue.commandBuffer();
+            retain(m_commandBuffer); //NOTE: keep alive to be useable at 'flip'
+        }
+
 		void resizeTexture(TextureHandle _handle, uint16_t _width, uint16_t _height, uint8_t _numMips) BX_OVERRIDE
 		{
 			TextureMtl& texture = m_textures[_handle.idx];

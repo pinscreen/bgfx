@@ -2310,6 +2310,18 @@ namespace bgfx
 					m_renderCtx->destroyFrameBuffer(handle);
 				}
 				break;
+                    
+            case CommandBuffer::ReadFrameBuffer:
+                {
+                    FrameBufferHandle handle;
+                    _cmdbuf.read(handle);
+                    
+                    void* data;
+                    _cmdbuf.read(data);
+                    
+                    m_renderCtx->readFrameBuffer(handle, data);
+                }
+                    break;
 
 			case CommandBuffer::CreateUniform:
 				{
@@ -3208,6 +3220,13 @@ error:
 		BGFX_CHECK_CAPS(BGFX_CAPS_TEXTURE_READ_BACK, "Texture read-back is not supported!");
 		return s_ctx->readTexture(_handle, _attachment, _data);
 	}
+    
+    uint32_t readFrameBuffer(FrameBufferHandle _handle, void* _data)
+    {
+        BGFX_CHECK_MAIN_THREAD();
+        BX_CHECK(NULL != _data, "_data can't be NULL");
+        return s_ctx->readFrameBuffer(_handle, _data);
+    }
 
 	FrameBufferHandle createFrameBuffer(uint16_t _width, uint16_t _height, TextureFormat::Enum _format, uint32_t _textureFlags)
 	{
